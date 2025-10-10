@@ -536,19 +536,20 @@ export default function DashboardPage() {
       </main>
 
       <Dialog open={showForecastModal} onOpenChange={setShowForecastModal}>
-        <DialogContent className="w-[98vw] h-[98vh] max-w-none overflow-y-auto p-8">
-          <DialogHeader className="space-y-3 pb-6">
-            <DialogTitle className="text-4xl font-bold leading-tight bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent flex items-center gap-3">
-              <Cloud className="h-10 w-10 text-blue-600" />
-              7-Day Weather Forecast
-            </DialogTitle>
-            <DialogDescription className="text-lg">
-              Detailed weather predictions for your farming region
-            </DialogDescription>
-          </DialogHeader>
-          {weatherData?.forecast ? (
-            <div className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <DialogContent fullScreen className="bg-gradient-to-br from-blue-50 via-cyan-50 to-sky-50 overflow-hidden flex flex-col">
+          <div className="flex-1 overflow-y-auto p-6 md:p-10">
+            <DialogHeader className="space-y-3 pb-6 text-left max-w-7xl mx-auto">
+              <DialogTitle className="text-4xl md:text-5xl font-bold leading-tight bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent flex items-center gap-3">
+                <Cloud className="h-10 w-10 text-blue-600" />
+                7-Day Weather Forecast
+              </DialogTitle>
+              <DialogDescription className="text-lg md:text-xl">
+                Detailed weather predictions for your farming region
+              </DialogDescription>
+            </DialogHeader>
+            {weatherData?.forecast ? (
+              <div className="space-y-6 max-w-7xl mx-auto">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {weatherData.forecast.map((day: any, index: number) => (
                   <motion.div
                     key={index}
@@ -579,14 +580,15 @@ export default function DashboardPage() {
                     </div>
                   </motion.div>
                 ))}
+                </div>
+                <WeatherForecastChart data={weatherData.forecast} />
               </div>
-              <WeatherForecastChart data={weatherData.forecast} />
-            </div>
-          ) : (
-            <div className="flex items-center justify-center h-64">
-              <Loader2 className="h-6 w-6 animate-spin" />
-            </div>
-          )}
+            ) : (
+              <div className="flex items-center justify-center h-64">
+                <Loader2 className="h-6 w-6 animate-spin" />
+              </div>
+            )}
+          </div>
         </DialogContent>
       </Dialog>
 
