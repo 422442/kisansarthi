@@ -76,7 +76,7 @@ export default function DashboardPage() {
 
     checkAuth()
   }, [router, setUserProfile, setIsAuthenticated])
-
+#cat
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date())
