@@ -162,13 +162,16 @@ Based on this comprehensive information, provide a detailed recommendation in bo
    - Irrigation recommendations based on humidity and rainfall forecast
    - Pest/disease risks based on weather patterns
 
-4. **MARKET INSIGHTS**
-   - Provide insights in both English and ${userProfile.language}.
-   - For each point, use the format:
-     - English: [Insight in English]
-     - ${userProfile.language}: [Insight in the user's language]
-   - Which crops are fetching good prices currently?
-   - Strategic planting suggestions for future profitability.
+4. **MARKET INSIGHTS (बाजार संबंधी जानकारी)**
+   - Provide at least 2-3 detailed market insights.
+   - For each insight, you MUST provide a translation in both English and ${userProfile.language}. Follow the format precisely.
+   - Example:
+     - English: With cotton prices being high at ₹7,500/quintal, consider selling your current stock.
+     - ${userProfile.language}: कपास का भाव ₹7,500/क्विंटल होने के कारण, अपने वर्तमान स्टॉक को बेचने पर विचार करें।
+   - Now, generate insights based on the provided market data covering:
+     - Which crops are fetching good prices currently.
+     - Strategic advice for future profitability based on trends.
+     - Recommendations on whether to sell now or store certain crops.
 
 5. **SOIL-SPECIFIC GUIDANCE**
    - Fertilizer recommendations for ${userProfile.soilType} soil
