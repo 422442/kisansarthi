@@ -124,19 +124,19 @@ IMPORTANT: Use this EXACT format with markdown tables for each section. Provide 
 
 ## TREATMENT RECOMMENDATIONS (उपचार की सिफारिशें)
 
-1. **Immediate Actions**
+1. **Immediate Actions (तुरंत करने वाले कदम)**
    - English: [Provide specific immediate steps like remove affected parts, apply emergency treatments, adjust watering, etc.]
    - ${userLanguage}: [${langInfo.native} में तुरंत करने वाले कदम]
 
-2. **Short-term Treatment (1-2 weeks)**
+2. **Short-term Treatment (1-2 weeks) (1-2 सप्ताह का इलाज)**
    - English: [Provide specific treatments like fungicide application, fertilizer schedule, organic remedies, etc.]
    - ${userLanguage}: [${langInfo.native} में 1-2 सप्ताह का इलाज]
 
-3. **Long-term Prevention**
+3. **Long-term Prevention (लंबे समय की रोकथाम)**
    - English: [Provide prevention strategies like crop rotation, soil improvement, resistant varieties, etc.]
    - ${userLanguage}: [${langInfo.native} में लंबे समय की रोकथाम]
 
-4. **Organic Alternatives**
+4. **Organic Alternatives (जैविक विकल्प)**
    - English: [Provide natural/organic treatment options like neem oil, compost, bio-pesticides, etc.]
    - ${userLanguage}: [${langInfo.native} में जैविक विकल्प]
 
@@ -157,7 +157,11 @@ CRITICAL INSTRUCTIONS:
 - For TREATMENT RECOMMENDATIONS section, provide detailed, practical steps
 - Do NOT use placeholder text like [detailed steps] - provide actual treatment recommendations
 - Include specific product names, application rates, and timelines where possible
-- Make sure each treatment step is actionable and clear`
+- Make sure each treatment step is actionable and clear
+- ALWAYS provide at least 4 treatment recommendations with specific details
+- Each treatment must include both English and ${userLanguage} content
+- Provide specific dosages, timings, and application methods
+- Include both chemical and organic treatment options`
 
     const result = await model.generateContent([
       prompt,
