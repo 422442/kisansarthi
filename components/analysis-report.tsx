@@ -55,29 +55,42 @@ export function AnalysisReport({ report }: AnalysisReportProps) {
           </CardContent>
         </Card>
         
-        {/* Extract any treatment recommendations from raw text */}
-        {report.toLowerCase().includes('treatment') && (
-          <Card className="border-blue-200 bg-blue-50/50">
-            <CardHeader>
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="h-5 w-5 text-blue-600" />
-                <CardTitle className="text-blue-900">Treatment Recommendations</CardTitle>
+        {/* Always show Treatment Recommendations with robust fallback */}
+        <Card className="border-blue-200 bg-blue-50/50">
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="h-5 w-5 text-blue-600" />
+              <CardTitle className="text-blue-900">Treatment Recommendations</CardTitle>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="bg-white rounded-lg p-4 border border-blue-100">
+              <div className="prose prose-sm max-w-none prose-headings:text-blue-900 prose-strong:text-gray-900">
+                {(() => {
+                  const section = report
+                    .split(/##/g)
+                    .find((s) => s.toLowerCase().includes("treatment") || s.toLowerCase().includes("recommendation"))
+
+                  const fallbackList = `
+1. Immediate Actions
+   - English: Remove affected parts, isolate the crop, and improve air circulation.
+   - Local: कृपया प्रभावित भागों को हटाएं, फसल को अलग रखें और हवा का संचार बढ़ाएं।
+2. Short-term Treatment (1-2 weeks)
+   - English: Apply suitable fungicide/pesticide as per label; follow dosage and interval strictly.
+   - Local: उपयुक्त दवा लेबल के अनुसार छिड़कें; मात्रा और अंतराल का पालन करें।
+3. Organic Alternatives
+   - English: Use neem oil (5–10 ml/L water) or bio-fungicides; add compost to improve soil health.
+   - Local: नीम तेल (5–10 ml/लीटर पानी) या जैविक फंगीसाइड का प्रयोग करें; कम्पोस्ट मिलाएं।
+4. Long-term Prevention
+   - English: Practice crop rotation, ensure drainage, and use resistant varieties in next season.
+   - Local: फसल चक्र अपनाएं, जल निकासी सुधारेँ, अगली सीजन में रोग-रोधी किस्में लगाएं।
+`
+                  return <ReactMarkdown>{section?.trim() || fallbackList}</ReactMarkdown>
+                })()}
               </div>
-            </CardHeader>
-            <CardContent>
-              <div className="bg-white rounded-lg p-4 border border-blue-100">
-                <div className="prose prose-sm max-w-none prose-headings:text-blue-900 prose-strong:text-gray-900">
-                  <ReactMarkdown>
-                    {report.split(/##/g).find(section => 
-                      section.toLowerCase().includes('treatment') || 
-                      section.toLowerCase().includes('recommendation')
-                    ) || 'Treatment recommendations are being processed...'}
-                  </ReactMarkdown>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
+            </div>
+          </CardContent>
+        </Card>
       </div>
     )
   }
@@ -258,24 +271,22 @@ export function AnalysisReport({ report }: AnalysisReportProps) {
           </CardHeader>
           <CardContent className="space-y-4">
             {(() => {
-              const content = treatmentKey ? sections[treatmentKey] : ''
-              console.log("[v0] Treatment content:", content)
-              
+              const content = treatmentKey ? sections[treatmentKey] : ""
               // If no treatment section found, extract from entire report
-              let treatmentContent = content
-              if (!treatmentContent || treatmentContent.trim().length < 10) {
-                console.log("[v0] No dedicated treatment section, extracting from full report")
-                treatmentContent = report
-              }
-              
+              let treatmentContent = content && content.trim().length >= 10 ? content : report
+
               // Split content into meaningful sections
-              const lines = treatmentContent.split('\n').filter(line => line.trim())
-              const treatments = []
-              let currentTreatment = { title: '', english: '', local: '' }
-              
+              const lines = treatmentContent.split("\n").filter((line) => line.trim())
+              const treatments: Array<{ title: string; english: string; local: string }> = []
+              let currentTreatment: { title: string; english: string; local: string } = {
+                title: "",
+                english: "",
+                local: "",
+              }
+
               for (let i = 0; i < lines.length; i++) {
                 const line = lines[i].trim()
-                
+
                 // Check if line starts with a number (like "1.", "2.", etc.) followed by bold text
                 if (/^\d+\.\s*\*\*/.test(line)) {
                   // Save previous treatment if it exists
@@ -285,114 +296,158 @@ export function AnalysisReport({ report }: AnalysisReportProps) {
                   // Start new treatment
                   const titleMatch = line.match(/^\d+\.\s*\*\*([^*]+)\*\*/)
                   currentTreatment = {
-                    title: titleMatch ? titleMatch[1].trim() : line.replace(/^\d+\.\s*\*\*/, '').replace(/\*\*/g, '').trim(),
-                    english: '',
-                    local: ''
+                    title: titleMatch
+                      ? titleMatch[1].trim()
+                      : line.replace(/^\d+\.\s*\*\*/, "").replace(/\*\*/g, "").trim(),
+                    english: "",
+                    local: "",
                   }
-                } else if (line.toLowerCase().includes('english:')) {
-                  currentTreatment.english = line.replace(/[-*]*\s*english:\s*/i, '').trim()
-                } else if (line.match(/[-*]*\s*(hindi|punjabi|marathi|telugu|हिंदी|ਪੰਜਾਬੀ|मराठी|తెలుగు):/i)) {
-                  currentTreatment.local = line.replace(/[-*]*\s*(hindi|punjabi|marathi|telugu|हिंदी|ਪੰਜਾਬੀ|मराठी|తెలుగు):\s*/i, '').trim()
-                } else if (currentTreatment.title && !currentTreatment.english && !line.includes(':') && line.length > 10) {
+                } else if (/[-*]*\s*english:/i.test(line)) {
+                  currentTreatment.english = line.replace(/[-*]*\s*english:\s*/i, "").trim()
+                } else if (/[-*]*\s*(hindi|punjabi|marathi|telugu|हिंदी|ਪੰਜਾਬੀ|मराठी|తెలుగు):/i.test(line)) {
+                  currentTreatment.local = line
+                    .replace(/[-*]*\s*(hindi|punjabi|marathi|telugu|हिंदी|ਪੰਜਾਬੀ|मराठी|తెలుగు):\s*/i, "")
+                    .trim()
+                } else if (currentTreatment.title && !currentTreatment.english && !line.includes(":") && line.length > 10) {
                   // If we have a title but no English content yet, this might be the content
                   currentTreatment.english = line
                 }
               }
-              
+
               // Add the last treatment
               if (currentTreatment.title) {
                 treatments.push(currentTreatment)
               }
-              
+
               // Enhanced fallback: extract treatments from content more aggressively
               if (treatments.length === 0) {
-                console.log("[v0] No structured treatments found, trying fallback extraction")
-                
                 // Try to find treatment sections by common keywords
                 const treatmentKeywords = [
-                  'immediate', 'emergency', 'urgent', 'first', 'तुरंत', 'फौरी',
-                  'short-term', 'treatment', 'apply', 'spray', 'उपचार', 'इलाज',
-                  'long-term', 'prevention', 'prevent', 'रोकथाम', 'बचाव',
-                  'organic', 'natural', 'biological', 'जैविक', 'प्राकृतिक'
+                  "immediate",
+                  "emergency",
+                  "urgent",
+                  "first",
+                  "तुरंत",
+                  "फौरी",
+                  "short-term",
+                  "treatment",
+                  "apply",
+                  "spray",
+                  "उपचार",
+                  "इलाज",
+                  "long-term",
+                  "prevention",
+                  "prevent",
+                  "रोकथाम",
+                  "बचाव",
+                  "organic",
+                  "natural",
+                  "biological",
+                  "जैविक",
+                  "प्राकृतिक",
                 ]
-                
-                const contentSentences = treatmentContent.split(/[.!?]\s+/).filter(s => s.trim().length > 20)
-                
+
+                const contentSentences = treatmentContent
+                  .split(/[.!?]\s+/)
+                  .filter((s) => s.trim().length > 20)
+
                 for (let i = 0; i < contentSentences.length; i++) {
                   const sentence = contentSentences[i].trim()
-                  
+
                   // Check if sentence contains treatment-related keywords
-                  if (treatmentKeywords.some(keyword => sentence.toLowerCase().includes(keyword.toLowerCase()))) {
+                  if (treatmentKeywords.some((keyword) => sentence.toLowerCase().includes(keyword.toLowerCase()))) {
                     // Try to categorize the treatment
-                    let category = 'Treatment Step'
-                    
-                    if (sentence.toLowerCase().includes('immediate') || sentence.toLowerCase().includes('emergency') || sentence.includes('तुरंत')) {
-                      category = 'Immediate Actions'
-                    } else if (sentence.toLowerCase().includes('organic') || sentence.toLowerCase().includes('natural') || sentence.includes('जैविक')) {
-                      category = 'Organic Alternatives'
-                    } else if (sentence.toLowerCase().includes('prevention') || sentence.toLowerCase().includes('prevent') || sentence.includes('रोकथाम')) {
-                      category = 'Long-term Prevention'
-                    } else if (sentence.toLowerCase().includes('treatment') || sentence.toLowerCase().includes('apply') || sentence.includes('उपचार')) {
-                      category = 'Short-term Treatment'
+                    let category = "Treatment Step"
+
+                    if (
+                      sentence.toLowerCase().includes("immediate") ||
+                      sentence.toLowerCase().includes("emergency") ||
+                      sentence.includes("तुरंत")
+                    ) {
+                      category = "Immediate Actions"
+                    } else if (
+                      sentence.toLowerCase().includes("organic") ||
+                      sentence.toLowerCase().includes("natural") ||
+                      sentence.includes("जैविक")
+                    ) {
+                      category = "Organic Alternatives"
+                    } else if (
+                      sentence.toLowerCase().includes("prevention") ||
+                      sentence.toLowerCase().includes("prevent") ||
+                      sentence.includes("रोकथाम")
+                    ) {
+                      category = "Long-term Prevention"
+                    } else if (
+                      sentence.toLowerCase().includes("treatment") ||
+                      sentence.toLowerCase().includes("apply") ||
+                      sentence.includes("उपचार")
+                    ) {
+                      category = "Short-term Treatment"
                     }
-                    
+
                     // Clean up the sentence and add as treatment
-                    const cleanSentence = sentence.replace(/[#*\[\]]/g, '').trim()
+                    const cleanSentence = sentence.replace(/[#*\[\]]/g, "").trim()
                     if (cleanSentence.length > 10) {
-                      treatments.push({
-                        title: category,
-                        english: cleanSentence,
-                        local: ''
-                      })
+                      treatments.push({ title: category, english: cleanSentence, local: "" })
                     }
                   }
                 }
-                
-                // Ultimate fallback: if still no treatments, create generic ones from any content
+
+                // Ultimate fallback: if still no treatments, create generic ones
                 if (treatments.length === 0) {
-                  console.log("[v0] Using ultimate fallback for treatments")
-                  
                   treatments.push({
-                    title: 'Immediate Actions',
-                    english: 'Remove affected plant parts and isolate the crop to prevent spread of disease. Apply immediate protective measures.',
-                    local: ''
+                    title: "Immediate Actions",
+                    english:
+                      "Remove affected plant parts and isolate the crop to prevent spread of disease. Apply immediate protective measures.",
+                    local: "",
                   })
-                  
+
                   treatments.push({
-                    title: 'Treatment Application',
-                    english: 'Apply appropriate fungicide or pesticide based on the identified issue. Follow recommended dosage and application timing.',
-                    local: ''
+                    title: "Treatment Application",
+                    english:
+                      "Apply appropriate fungicide or pesticide based on the identified issue. Follow recommended dosage and application timing.",
+                    local: "",
                   })
-                  
+
                   treatments.push({
-                    title: 'Organic Treatment',
-                    english: 'Use neem oil spray (5-10ml per liter of water) or organic compost to improve plant health naturally.',
-                    local: ''
+                    title: "Organic Treatment",
+                    english:
+                      "Use neem oil spray (5-10ml per liter of water) or organic compost to improve plant health naturally.",
+                    local: "",
                   })
-                  
+
                   treatments.push({
-                    title: 'Monitoring & Prevention',
-                    english: 'Monitor crop progress daily and implement preventive measures like proper drainage and crop rotation.',
-                    local: ''
+                    title: "Monitoring & Prevention",
+                    english:
+                      "Monitor crop progress daily and implement preventive measures like proper drainage and crop rotation.",
+                    local: "",
                   })
                 }
               }
 
               // Ensure we always have at least 3 treatments
-              while (treatments.length < 3) {
-                const defaultTreatments = [
-                  { title: 'Monitor Progress', english: 'Monitor the crop regularly for improvement and take additional measures if needed.', local: '' },
-                  { title: 'Soil Management', english: 'Improve soil drainage and apply organic compost to enhance soil health.', local: '' },
-                  { title: 'Preventive Measures', english: 'Implement crop rotation and use resistant varieties in future plantings.', local: '' }
-                ]
-                
-                const defaultIndex = Math.min(treatments.length, defaultTreatments.length - 1)
-                const nextDefault = defaultTreatments[defaultIndex]
-                if (nextDefault) {
-                  treatments.push(nextDefault)
-                } else {
-                  break
-                }
+              const defaults = [
+                {
+                  title: "Monitor Progress",
+                  english:
+                    "Monitor the crop regularly for improvement and take additional measures if needed.",
+                  local: "",
+                },
+                {
+                  title: "Soil Management",
+                  english: "Improve soil drainage and apply organic compost to enhance soil health.",
+                  local: "",
+                },
+                {
+                  title: "Preventive Measures",
+                  english:
+                    "Implement crop rotation and use resistant varieties in future plantings.",
+                  local: "",
+                },
+              ]
+              let idxDefault = 0
+              while (treatments.length < 3 && idxDefault < defaults.length) {
+                treatments.push(defaults[idxDefault++])
               }
 
               return treatments.map((treatment, idx) => (
