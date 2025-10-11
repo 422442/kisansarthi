@@ -184,50 +184,6 @@ export function WeatherForecastChart({ data }: WeatherForecastChartProps) {
           </ResponsiveContainer>
         </CardContent>
       </Card>
-
-      <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7">
-        {data.map((day, index) => (
-          <motion.div
-            key={index}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.05 }}
-            whileHover={{ scale: 1.05, y: -5 }}
-          >
-            <Card className="bg-white/80 backdrop-blur-sm border border-blue-100 hover:border-blue-300 transition-all shadow-sm hover:shadow-md">
-              <CardContent className="p-3 text-center">
-                <div className="text-sm font-medium text-blue-900 mb-1">{day.day}</div>
-                <div className="text-xs text-muted-foreground mb-2 bg-blue-50 rounded px-2 py-1">
-                  {day.date}
-                </div>
-
-                <div className="my-2 text-blue-600 scale-75">
-                  <img
-                    src={`https://openweathermap.org/img/wn/${day.icon}@2x.png`}
-                    alt={day.condition}
-                    className="w-12 h-12 mx-auto"
-                  />
-                </div>
-
-                <div className="text-xs text-center text-blue-700 mb-2 line-clamp-1">
-                  {day.condition}
-                </div>
-
-                <div className="space-y-1">
-                  <div className="flex justify-between items-center text-xs">
-                    <span className="text-muted-foreground">High</span>
-                    <span className="font-bold text-red-600">{day.maxTemp}°</span>
-                  </div>
-                  <div className="flex justify-between items-center text-xs">
-                    <span className="text-muted-foreground">Low</span>
-                    <span className="font-bold text-blue-600">{day.minTemp}°</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        ))}
-      </div>
     </div>
   )
 }
