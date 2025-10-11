@@ -534,31 +534,42 @@ export default function DashboardPage() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.1 * index }}
                     whileHover={{ scale: 1.05, y: -5 }}
-                    className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl p-6 shadow-lg border-2 border-blue-200 hover:border-blue-400 transition-all"
+                    className="bg-white/80 backdrop-blur-sm rounded-xl p-4 shadow-md border border-blue-100 hover:border-blue-300 transition-all"
                   >
-                    <p className="text-lg font-bold text-blue-900 mb-3">
-                      {new Date(day.date).toLocaleDateString("en-US", {
-                        weekday: "long",
-                        month: "short",
-                        day: "numeric",
-                      })}
-                    </p>
-                    <div className="flex justify-center my-4 text-blue-600">{getWeatherIcon(day.condition)}</div>
-                    <p className="text-sm text-center text-blue-700 mb-4 font-medium">{day.condition}</p>
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="bg-white rounded-lg p-3 text-center">
-                        <p className="text-xs text-muted-foreground">High</p>
-                        <p className="text-2xl font-bold text-red-600">{day.maxTemp}°</p>
+                    <div className="text-center">
+                      <p className="text-sm font-medium text-blue-900 mb-2">
+                        {new Date(day.date).toLocaleDateString("en-US", {
+                          weekday: "short",
+                          month: "short",
+                          day: "numeric",
+                        })}
+                      </p>
+                      <div className="flex justify-center my-3 text-blue-600 scale-75">
+                        {getWeatherIcon(day.condition)}
                       </div>
-                      <div className="bg-white rounded-lg p-3 text-center">
-                        <p className="text-xs text-muted-foreground">Low</p>
-                        <p className="text-2xl font-bold text-blue-600">{day.minTemp}°</p>
+                      <p className="text-xs text-center text-blue-700 mb-3 line-clamp-2">{day.condition}</p>
+                      <div className="space-y-2">
+                        <div className="flex justify-between items-center text-xs">
+                          <span className="text-muted-foreground">High</span>
+                          <span className="font-bold text-red-600">{day.maxTemp}°</span>
+                        </div>
+                        <div className="flex justify-between items-center text-xs">
+                          <span className="text-muted-foreground">Low</span>
+                          <span className="font-bold text-blue-600">{day.minTemp}°</span>
+                        </div>
                       </div>
                     </div>
                   </motion.div>
                 ))}
                 </div>
-                <WeatherForecastChart data={weatherData.forecast} />
+                
+                <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-4 md:p-6 shadow-xl border border-blue-200">
+                  <h3 className="text-xl md:text-2xl font-bold text-blue-900 mb-4 flex items-center gap-2">
+                    <BarChart3 className="h-5 w-5 md:h-6 md:w-6" />
+                    Temperature Trends
+                  </h3>
+                  <WeatherForecastChart data={weatherData.forecast} />
+                </div>
               </div>
             ) : (
               <div className="flex items-center justify-center h-64">
