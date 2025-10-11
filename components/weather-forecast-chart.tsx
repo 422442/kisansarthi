@@ -185,59 +185,42 @@ export function WeatherForecastChart({ data }: WeatherForecastChartProps) {
         </CardContent>
       </Card>
 
-      <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-7">
+      <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7">
         {data.map((day, index) => (
           <motion.div
             key={index}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1 }}
-            whileHover={{ scale: 1.05, y: -10 }}
+            transition={{ delay: index * 0.05 }}
+            whileHover={{ scale: 1.05, y: -5 }}
           >
-            <Card className="hover:shadow-2xl transition-all duration-300 border-2 hover:border-blue-400 bg-gradient-to-br from-white to-blue-50">
-              <CardContent className="pt-8 pb-8 text-center space-y-5">
-                <div className="font-bold text-xl text-blue-900">{day.day}</div>
-                <div className="text-sm text-muted-foreground font-semibold bg-blue-100 rounded-full px-4 py-2 inline-block">
+            <Card className="bg-white/80 backdrop-blur-sm border border-blue-100 hover:border-blue-300 transition-all shadow-sm hover:shadow-md">
+              <CardContent className="p-3 text-center">
+                <div className="text-sm font-medium text-blue-900 mb-1">{day.day}</div>
+                <div className="text-xs text-muted-foreground mb-2 bg-blue-50 rounded px-2 py-1">
                   {day.date}
                 </div>
 
-                <motion.div
-                  animate={{
-                    scale: [1, 1.15, 1],
-                  }}
-                  transition={{
-                    duration: 3,
-                    repeat: Number.POSITIVE_INFINITY,
-                    repeatType: "reverse",
-                  }}
-                  className="relative"
-                >
-                  <div className="absolute inset-0 bg-blue-200 rounded-full blur-2xl opacity-40"></div>
+                <div className="my-2 text-blue-600 scale-75">
                   <img
-                    src={`https://openweathermap.org/img/wn/${day.icon}@4x.png`}
+                    src={`https://openweathermap.org/img/wn/${day.icon}@2x.png`}
                     alt={day.condition}
-                    className="w-32 h-32 mx-auto drop-shadow-2xl relative z-10"
+                    className="w-12 h-12 mx-auto"
                   />
-                  <div className="absolute -top-3 -right-3 text-5xl">{getWeatherIcon(day.condition)}</div>
-                </motion.div>
+                </div>
 
-                <div className="text-base font-bold text-gray-700 bg-gradient-to-r from-blue-100 to-cyan-100 rounded-full px-5 py-3">
+                <div className="text-xs text-center text-blue-700 mb-2 line-clamp-1">
                   {day.condition}
                 </div>
 
-                <div className="flex items-center justify-center gap-5 pt-4">
-                  <div className="flex flex-col items-center">
-                    <span className="text-sm text-muted-foreground font-medium mb-2">High</span>
-                    <div className="bg-red-50 rounded-xl px-4 py-3 border-2 border-red-200 shadow-md">
-                      <span className="text-red-600 font-bold text-3xl">{day.maxTemp}°</span>
-                    </div>
+                <div className="space-y-1">
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="text-muted-foreground">High</span>
+                    <span className="font-bold text-red-600">{day.maxTemp}°</span>
                   </div>
-                  <div className="h-16 w-px bg-gradient-to-b from-transparent via-gray-300 to-transparent"></div>
-                  <div className="flex flex-col items-center">
-                    <span className="text-sm text-muted-foreground font-medium mb-2">Low</span>
-                    <div className="bg-blue-50 rounded-xl px-4 py-3 border-2 border-blue-200 shadow-md">
-                      <span className="text-blue-600 font-bold text-3xl">{day.minTemp}°</span>
-                    </div>
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="text-muted-foreground">Low</span>
+                    <span className="font-bold text-blue-600">{day.minTemp}°</span>
                   </div>
                 </div>
               </CardContent>
