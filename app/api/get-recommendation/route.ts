@@ -163,9 +163,12 @@ Based on this comprehensive information, provide a detailed recommendation in bo
    - Pest/disease risks based on weather patterns
 
 4. **MARKET INSIGHTS**
-   - Which crops are fetching good prices currently (refer to the market data above)
-   - Strategic planting suggestions for future profitability
-   - Storage vs immediate sale recommendations
+   - Provide insights in both English and ${userProfile.language}.
+   - For each point, use the format:
+     - English: [Insight in English]
+     - ${userProfile.language}: [Insight in the user's language]
+   - Which crops are fetching good prices currently?
+   - Strategic planting suggestions for future profitability.
 
 5. **SOIL-SPECIFIC GUIDANCE**
    - Fertilizer recommendations for ${userProfile.soilType} soil
