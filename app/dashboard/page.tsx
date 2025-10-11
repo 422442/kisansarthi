@@ -510,29 +510,6 @@ export default function DashboardPage() {
             </Button>
           </motion.div>
         </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-        >
-          <motion.div whileHover={{ scale: 1.02, y: -3 }} whileTap={{ scale: 0.98 }}>
-            <Button
-              size="lg"
-              variant="outline"
-              className="h-24 text-lg w-full shadow-lg bg-gradient-to-r from-teal-50 to-cyan-50 border-2 border-teal-200 hover:border-teal-400"
-              onClick={() => router.push("/crop-rotation")}
-            >
-              <div className="flex items-center gap-4">
-                <RefreshCw className="h-8 w-8 text-teal-600" />
-                <div className="text-left">
-                  <div className="font-bold text-teal-900">Crop Rotation Planner</div>
-                  <div className="text-sm text-muted-foreground font-normal">Plan your seasonal crop cycles</div>
-                </div>
-              </div>
-            </Button>
-          </motion.div>
-        </motion.div>
       </main>
 
       <Dialog open={showForecastModal} onOpenChange={setShowForecastModal}>
