@@ -65,8 +65,8 @@ Be strict - only agricultural/plant images should be marked as YES.`
     console.log("[v0] Validation result:", validationText)
 
     const isValidMatch = validationText.match(/IS_VALID:\s*(YES|NO)/i)
-    const reasonMatch = validationText.match(/REASON:\s*(.+?)(?=REASON_LOCAL:|$)/s)
-    const reasonLocalMatch = validationText.match(/REASON_LOCAL:\s*(.+?)$/s)
+    const reasonMatch = validationText.match(/REASON:\s*(.+?)(?=REASON_LOCAL:|$)/i)
+    const reasonLocalMatch = validationText.match(/REASON_LOCAL:\s*(.+?)$/i)
 
     if (isValidMatch && isValidMatch[1].toUpperCase() === "NO") {
       const reason = reasonMatch
@@ -125,20 +125,20 @@ IMPORTANT: Use this EXACT format with markdown tables for each section. Provide 
 ## TREATMENT RECOMMENDATIONS (उपचार की सिफारिशें)
 
 1. **Immediate Actions**
-   - English: [detailed steps]
-   - ${userLanguage}: [${langInfo.native} में विस्तृत कदम]
+   - English: [Provide specific immediate steps like remove affected parts, apply emergency treatments, adjust watering, etc.]
+   - ${userLanguage}: [${langInfo.native} में तुरंत करने वाले कदम]
 
 2. **Short-term Treatment (1-2 weeks)**
-   - English: [detailed steps]
-   - ${userLanguage}: [${langInfo.native} में विस्तृत कदम]
+   - English: [Provide specific treatments like fungicide application, fertilizer schedule, organic remedies, etc.]
+   - ${userLanguage}: [${langInfo.native} में 1-2 सप्ताह का इलाज]
 
 3. **Long-term Prevention**
-   - English: [detailed steps]
-   - ${userLanguage}: [${langInfo.native} में विस्तृत कदम]
+   - English: [Provide prevention strategies like crop rotation, soil improvement, resistant varieties, etc.]
+   - ${userLanguage}: [${langInfo.native} में लंबे समय की रोकथाम]
 
 4. **Organic Alternatives**
-   - English: [detailed steps]
-   - ${userLanguage}: [${langInfo.native} में विस्तृत कदम]
+   - English: [Provide natural/organic treatment options like neem oil, compost, bio-pesticides, etc.]
+   - ${userLanguage}: [${langInfo.native} में जैविक विकल्प]
 
 ## ADDITIONAL NOTES (अतिरिक्त नोट्स)
 
@@ -153,7 +153,11 @@ CRITICAL INSTRUCTIONS:
 - Use proper ${userLanguage} script and grammar
 - Follow the table format EXACTLY as shown
 - Be specific, actionable, and provide complete bilingual content
-- Ensure ${userLanguage} translations are accurate and natural`
+- Ensure ${userLanguage} translations are accurate and natural
+- For TREATMENT RECOMMENDATIONS section, provide detailed, practical steps
+- Do NOT use placeholder text like [detailed steps] - provide actual treatment recommendations
+- Include specific product names, application rates, and timelines where possible
+- Make sure each treatment step is actionable and clear`
 
     const result = await model.generateContent([
       prompt,
