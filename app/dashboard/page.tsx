@@ -537,13 +537,9 @@ export default function DashboardPage() {
                     className="bg-white/80 backdrop-blur-sm rounded-xl p-4 shadow-md border border-blue-100 hover:border-blue-300 transition-all"
                   >
                     <div className="text-center">
-                      <p className="text-sm font-medium text-blue-900 mb-2">
-                        {new Date(day.date).toLocaleDateString("en-US", {
-                          weekday: "short",
-                          month: "short",
-                          day: "numeric",
-                        })}
-                      </p>
+<p className="text-sm font-medium text-blue-900 mb-2">
+  {day.day}, {day.date}
+</p>
                       <div className="flex justify-center my-3 text-blue-600 scale-75">
                         {getWeatherIcon(day.condition)}
                       </div>
