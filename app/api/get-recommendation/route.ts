@@ -87,6 +87,30 @@ Include 5-8 major commodities relevant to ${userProfile.state}. Prices should be
       console.log("[v0] Failed to fetch market prices for recommendation:", error)
     }
 
+    // Fallback to internal market-prices API if Gemini (primary) returned nothing
+    if (!marketData || (Array.isArray(marketData) && marketData.length === 0)) {
+      try {
+        const origin = new URL(request.url).origin
+        const res = await fetch(`${origin}/api/market-prices`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ state: userProfile.state }),
+          cache: "no-store",
+        })
+        if (res.ok) {
+          const data = await res.json()
+          if (Array.isArray(data) && data.length > 0) {
+            marketData = data
+            console.log("[v0] Using fallback market data from internal API:", data.length, "commodities")
+          }
+        } else {
+          console.warn("[v0] Fallback market-prices API status:", res.status)
+        }
+      } catch (e) {
+        console.warn("[v0] Fallback to internal market-prices failed:", e)
+      }
+    }
+
     const prompt = `You are an expert agricultural advisor AI assistant for Indian farmers. Provide a personalized, actionable farming recommendation based on the following comprehensive data:
 
 **FARMER PROFILE:**
@@ -118,7 +142,7 @@ ${weatherData.forecast
 **CURRENT MARKET PRICES (${userProfile.state}):**
 ${
   marketData && marketData.length > 0
-    ? marketData.map((item: any) => `- ${item.commodity}: ₹${item.price.toLocaleString()}/quintal`).join("\n")
+    ? marketData.map((item: any) => `- ${item.commodity}: ₹${Number(item.price).toLocaleString()}/quintal`).join("\n")
     : "- Market data unavailable"
 }
 
@@ -226,7 +250,7 @@ ${
 
 ${marketData
   .slice(0, 8)
-  .map((item: any) => `- **${item.commodity}**: ₹${item.price.toLocaleString()}/quintal`)
+  .map((item: any) => `- **${item.commodity}**: ₹${Number(item.price).toLocaleString()}/quintal`)
   .join("\n")}
 
 **Market Strategy:**
