@@ -38,17 +38,47 @@ export function AnalysisReport({ report }: AnalysisReportProps) {
   const sections = parseReport(report)
 
   if (!sections) {
+    // If structured parsing fails, show the raw report with enhanced formatting
     return (
-      <Card className="border-gray-200">
-        <CardHeader>
-          <CardTitle>Analysis Report</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="prose prose-sm max-w-none prose-headings:text-green-900 prose-strong:text-gray-900">
-            <ReactMarkdown>{report}</ReactMarkdown>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="space-y-6">
+        <Card className="border-gray-200">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <CheckCircle2 className="h-5 w-5 text-green-600" />
+              Analysis Report
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="prose prose-sm max-w-none prose-headings:text-green-900 prose-strong:text-gray-900">
+              <ReactMarkdown>{report}</ReactMarkdown>
+            </div>
+          </CardContent>
+        </Card>
+        
+        {/* Extract any treatment recommendations from raw text */}
+        {report.toLowerCase().includes('treatment') && (
+          <Card className="border-blue-200 bg-blue-50/50">
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="h-5 w-5 text-blue-600" />
+                <CardTitle className="text-blue-900">Treatment Recommendations</CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="bg-white rounded-lg p-4 border border-blue-100">
+                <div className="prose prose-sm max-w-none prose-headings:text-blue-900 prose-strong:text-gray-900">
+                  <ReactMarkdown>
+                    {report.split(/##/g).find(section => 
+                      section.toLowerCase().includes('treatment') || 
+                      section.toLowerCase().includes('recommendation')
+                    ) || 'Treatment recommendations are being processed...'}
+                  </ReactMarkdown>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+      </div>
     )
   }
 
@@ -227,20 +257,55 @@ export function AnalysisReport({ report }: AnalysisReportProps) {
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
-            {sections[treatmentKey]
-              .split(/\d+\.\s+\*\*/)
-              .filter((s) => s.trim())
-              .map((treatment, idx) => {
+            {(() => {
+              const content = sections[treatmentKey]
+              
+              // Try different splitting methods to handle various AI response formats
+              let treatmentSections = []
+              
+              // Method 1: Split by numbered list with bold headers
+              const numberedSections = content.split(/\d+\.\s+\*\*/).filter((s) => s.trim())
+              if (numberedSections.length > 1) {
+                treatmentSections = numberedSections
+              } else {
+                // Method 2: Split by numbered list without bold
+                const simpleNumbered = content.split(/\d+\.\s+/).filter((s) => s.trim())
+                if (simpleNumbered.length > 1) {
+                  treatmentSections = simpleNumbered
+                } else {
+                  // Method 3: Use the entire content as one treatment
+                  treatmentSections = [content]
+                }
+              }
+
+              return treatmentSections.map((treatment, idx) => {
                 const lines = treatment.split("\n").filter((l) => l.trim())
-                const title = lines[0]?.replace(/\*\*/g, "").trim()
-                const englishContent = lines
-                  .find((l) => l.includes("English:"))
-                  ?.replace(/[-*]\s*English:\s*/i, "")
-                  .trim()
-                const localContent = lines
-                  .find((l) => l.match(/[-*]\s*(Hindi|Punjabi|Marathi|Telugu|हिंदी|ਪੰਜਾਬੀ|मराठी|తెలుగు):/i))
-                  ?.replace(/[-*]\s*(Hindi|Punjabi|Marathi|Telugu|हिंदी|ਪੰਜਾਬੀ|मराठी|తెలుగు):\s*/i, "")
-                  .trim()
+                
+                // Extract title - first line or first bold text
+                let title = lines[0]?.replace(/\*\*/g, "").trim() || `Treatment ${idx + 1}`
+                
+                // Extract English content
+                let englishContent = ""
+                let localContent = ""
+                
+                // Look for English: pattern
+                const englishLine = lines.find((l) => l.toLowerCase().includes("english:"))
+                if (englishLine) {
+                  englishContent = englishLine.replace(/[-*]\s*english:\s*/i, "").trim()
+                }
+                
+                // Look for local language content
+                const localLine = lines.find((l) => 
+                  l.match(/[-*]\s*(hindi|punjabi|marathi|telugu|हिंदी|ਪੰਜਾਬੀ|मराठी|తెలుగు):/i)
+                )
+                if (localLine) {
+                  localContent = localLine.replace(/[-*]\s*(hindi|punjabi|marathi|telugu|हिंदी|ਪੰਜਾਬੀ|मराठी|తెలుగు):\s*/i, "").trim()
+                }
+                
+                // If no structured content found, use all lines as content
+                if (!englishContent && !localContent) {
+                  englishContent = lines.slice(1).join(" ").trim() || lines.join(" ").trim()
+                }
 
                 return (
                   <div key={idx} className="bg-white rounded-lg p-4 border border-blue-100">
@@ -250,13 +315,18 @@ export function AnalysisReport({ report }: AnalysisReportProps) {
                       </div>
                       <div className="flex-1">
                         <h4 className="font-semibold text-blue-900 mb-2">{title}</h4>
-                        {englishContent && <p className="text-gray-900 mb-2">{englishContent}</p>}
-                        {localContent && <p className="text-gray-600 text-sm font-medium">{localContent}</p>}
+                        {englishContent && (
+                          <p className="text-gray-900 mb-2 leading-relaxed">{englishContent}</p>
+                        )}
+                        {localContent && (
+                          <p className="text-gray-600 text-sm font-medium leading-relaxed">{localContent}</p>
+                        )}
                       </div>
                     </div>
                   </div>
                 )
-              })}
+              })
+            })()}
           </CardContent>
         </Card>
       )}
