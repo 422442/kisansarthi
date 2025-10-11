@@ -331,13 +331,9 @@ export default function DashboardPage() {
                       whileHover={{ scale: 1.05, y: -5 }}
                       className="bg-white/70 backdrop-blur-sm rounded-xl p-4 shadow-md border border-blue-100 hover:border-blue-300 transition-all"
                     >
-                      <p className="text-sm font-medium text-blue-900 mb-2">
-                        {new Date(day.date).toLocaleDateString("en-US", {
-                          weekday: "short",
-                          month: "short",
-                          day: "numeric",
-                        })}
-                      </p>
+<p className="text-sm font-medium text-blue-900 mb-2">
+  {day.day}, {day.date}
+</p>
                       <div className="flex justify-center my-3 text-blue-600">{getWeatherIcon(day.condition)}</div>
                       <p className="text-xs text-center text-blue-700 mb-3">{day.condition}</p>
                       <div className="flex justify-between items-center">
